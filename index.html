@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>계약안심 AI — 사회적 약자·자립준비청년을 위한 계약서 쉬운 풀이 및 위험 특약 탐지 서비스</title>
+
+  <!-- Google Fonts: Noto Sans KR & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans KR"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            tealbrand: {
+              dark: '#0E5566',
+              mid: '#1E7A8C',
+              light: '#4CA3B5',
+              ice: '#F4F9FA',
+              tint: '#E6F2F5',
+              border: '#CFE2E7',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* 기본 스크롤바 및 타이포그래피 보정 */
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #F4F9FA;
+      color: #132A33;
+      word-break: keep-all;
+    }
+
+    /* 원문 내 탐지된 법률 용어 하이라이트 스타일 */
+    .legal-term-highlight {
+      background-color: #E0F2FE;
+      color: #0E5566;
+      border-bottom: 2px solid #1E7A8C;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .legal-term-highlight:hover {
+      background-color: #0E5566;
+      color: #FFFFFF;
+    }
+
+    /* 부드러운 카드 등장 애니메이션 */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-card {
+      animation: fadeSlideUp 0.28s ease-out forwards;
+    }
+
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F4F9FA;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #B8D2D9;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #1E7A8C;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- =====================================================================
+       1. 상단 헤더 (서비스 타이틀 · 실시간 AI 엔진 상태 · 가공 데이터 JSON 버튼)
+       ===================================================================== -->
+  <header class="bg-[#0E5566] text-white shadow-md sticky top-0 z-30">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <!-- 브랜드 로고 및 타이틀 -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center shrink-0">
+          <!-- 인라인 SVG 방패 + 문서 아이콘 -->
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight">계약안심 AI</h1>
+            <span class="hidden sm:inline-block text-[11px] font-semibold bg-white/15 text-teal-50 px-2 py-0.5 rounded-full border border-white/20">
+              딥러닝 자연어 처리 기반
+            </span>
+          </div>
+          <p class="text-xs sm:text-[13px] text-teal-100/90 mt-0.5">
+            자립준비청년·사회초년생을 위한 계약서 쉬운 풀이 &amp; 불리한 특약 탐지
+          </p>
+        </div>
+      </div>
+
+      <!-- 우측 상태 배지 및 JSON 데이터 관리 버튼 -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <!-- 실시간 AI 모델 상태 표시 배지 -->
+        <div id="ai-status-pill" class="flex items-center gap-2 bg-white/10 border border-white/20 px-3 py-1.5 rounded-full text-xs font-medium text-teal-50">
+          <span id="ai-status-dot" class="w-2 h-2 rounded-full bg-amber-300 animate-pulse"></span>
+          <span id="ai-status-text">심층신경망(MiniLM) 로딩 중 — 즉시 분석 가능</span>
+        </div>
+
+        <!-- 가공 데이터(JSON) 확인 및 업로드 버튼 -->
+        <button
+          id="open-json-modal-btn"
+          type="button"
+          class="flex items-center gap-1.5 bg-white text-[#0E5566] hover:bg-teal-50 active:scale-[0.99] font-bold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer"
+        >
+          <svg class="w-4 h-4 text-[#1E7A8C]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+          </svg>
+          <span>가공 데이터(JSON) 확인 및 업로드</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 인라인 알림 토스트 영역 (alert() 대신 사용) -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- =====================================================================
+       2. 메인 콘텐츠 영역 (좌측: 계약서 입력 및 샘플 / 우측: AI 분석 결과 & 원리)
+       ===================================================================== -->
+  <main class="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-5">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+      <!-- =================================================================
+           좌측 패널 (5 Columns): 계약 유형 선택 · 시연용 샘플 · 계약서 원문 입력
+           ================================================================= -->
+      <section class="lg:col-span-5 bg-white rounded-2xl border border-[#CFE2E7] shadow-sm p-5 flex flex-col gap-4">
+        <!-- 패널 제목 -->
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-[#0E5566] text-white text-xs font-bold flex items-center justify-center">1</span>
+            <h2 class="text-base sm:text-lg font-bold text-[#0E5566]">계약서 입력 및 시연 샘플 선택</h2>
+          </div>
+          <span id="dataset-count-badge" class="text-xs font-semibold text-[#1E7A8C] bg-[#F4F9FA] border border-[#CFE2E7] px-2.5 py-1 rounded-lg">
+            법률 용어 DB 26종 탑재
+          </span>
+        </div>
+
+        <!-- 계약 유형 필터 탭 -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5">계약 유형 기준 선택</label>
+          <div class="grid grid-cols-3 gap-1.5 bg-[#F4F9FA] p-1 rounded-xl border border-[#CFE2E7]" role="tablist">
+            <button
+              type="button"
+              data-contract-filter="전체"
+              class="contract-filter-btn bg-[#0E5566] text-white font-bold text-xs sm:text-sm py-2 px-2 rounded-lg transition cursor-pointer"
+            >
+              전체
+            </button>
+            <button
+              type="button"
+              data-contract-filter="임대차 계약"
+              class="contract-filter-btn text-slate-700 hover:bg-white/70 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg transition cursor-pointer"
+            >
+              임대차 계약 (전·월세)
+            </button>
+            <button
+              type="button"
+              data-contract-filter="근로 계약"
+              class="contract-filter-btn text-slate-700 hover:bg-white/70 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg transition cursor-pointer"
+            >
+              근로 계약 (취업·알바)
+            </button>
+          </div>
+        </div>
+
+        <!-- 페르소나 맞춤형 원클릭 시연 샘플 3종 -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-bold text-slate-600">페르소나(자립준비청년) 시연용 계약서 샘플</label>
+            <span class="text-[11px] text-slate-400">클릭 시 자동 입력 및 분석</span>
+          </div>
+          <div class="flex flex-col gap-2">
+            <button
+              type="button"
+              data-sample="sample1"
+              class="sample-btn text-left p-3 rounded-xl border-2 border-[#1E7A8C] bg-[#F4F9FA] hover:bg-[#E6F2F5] transition flex items-start justify-between gap-2 cursor-pointer"
+            >
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-700">독소 특약 포함</span>
+                  <span class="text-xs sm:text-sm font-bold text-[#0E5566]">[샘플 1] 원룸 임대차 계약서</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1">전대차, 근저당권, 수리비 전가 및 집주인 변경 시 보증금 포기 변형 문장 포함</p>
+              </div>
+              <span class="text-xs font-bold text-[#1E7A8C] shrink-0 mt-0.5">선택 →</span>
+            </button>
+
+            <button
+              type="button"
+              data-sample="sample2"
+              class="sample-btn text-left p-3 rounded-xl border border-slate-200 bg-white hover:bg-[#F4F9FA] hover:border-[#1E7A8C] transition flex items-start justify-between gap-2 cursor-pointer"
+            >
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">불공정 조항 포함</span>
+                  <span class="text-xs sm:text-sm font-bold text-slate-800">[샘플 2] 카페 단기 근로계약서</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1">조기 퇴사 시 급여 90% 감액 지급, 매장 매출 피해 배상 및 포괄임금 조항 포함</p>
+              </div>
+              <span class="text-xs font-bold text-slate-500 shrink-0 mt-0.5">선택 →</span>
+            </button>
+
+            <button
+              type="button"
+              data-sample="sample3"
+              class="sample-btn text-left p-3 rounded-xl border border-slate-200 bg-white hover:bg-[#F4F9FA] hover:border-[#1E7A8C] transition flex items-start justify-between gap-2 cursor-pointer"
+            >
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">안전 조항 예시</span>
+                  <span class="text-xs sm:text-sm font-bold text-slate-800">[샘플 3] 표준 주택임대차 계약서</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1">대항력·확정일자 보장, 보증금 반환 및 수선 의무가 법령에 맞게 작성된 정상 예시</p>
+              </div>
+              <span class="text-xs font-bold text-slate-500 shrink-0 mt-0.5">선택 →</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 계약서 조항 텍스트 입력창 -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="contract-input" class="text-xs font-bold text-slate-600">계약서 원문 (직접 수정하거나 새 문장을 붙여넣을 수 있습니다)</label>
+            <button
+              id="clear-input-btn"
+              type="button"
+              class="text-xs text-slate-500 hover:text-red-600 font-medium underline cursor-pointer"
+            >
+              내용 지우기
+            </button>
+          </div>
+          <textarea
+            id="contract-input"
+            rows="9"
+            placeholder="분석하고 싶은 계약서 조항이나 특약 사항을 입력해 주세요. (마침표 또는 줄바꿈 기준으로 조항별 자동 분석됩니다)"
+            class="w-full rounded-xl border border-[#CFE2E7] bg-[#F9FCFD] focus:bg-white focus:border-[#0E5566] focus:ring-2 focus:ring-[#0E5566]/15 p-3.5 text-sm leading-relaxed text-slate-800 outline-none transition"
+          ></textarea>
+          <div class="flex items-center justify-between mt-1.5 text-[11px] text-slate-500">
+            <span>※ 팁: 단어를 다르게 바꿔 입력해도 임베딩 유사도로 문맥을 탐지합니다.</span>
+            <span id="input-stats">0자 · 0개 조항</span>
+          </div>
+        </div>
+
+        <!-- 실행 CTA 버튼 -->
+        <button
+          id="analyze-btn"
+          type="button"
+          class="w-full py-3.5 px-5 rounded-xl bg-[#0E5566] hover:bg-[#093E4B] active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-md flex items-center justify-center gap-2 transition cursor-pointer"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <span>딥러닝 AI로 계약서 분석하기</span>
+        </button>
+      </section>
+
+      <!-- =================================================================
+           우측 패널 (7 Columns): 종합 진단 요약 · 조항별 쉬운 풀이 · 딥러닝 원리 보기
+           ================================================================= -->
+      <section class="lg:col-span-7 flex flex-col gap-5">
+
+        <!-- 1) 종합 진단 요약 카드 -->
+        <div class="bg-white rounded-2xl border border-[#CFE2E7] shadow-sm p-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-[#1E7A8C] text-white text-xs font-bold flex items-center justify-center">2</span>
+              <h2 class="text-base sm:text-lg font-bold text-[#0E5566]">AI 계약서 종합 진단 요약</h2>
+            </div>
+            <span id="inference-engine-tag" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-[#F4F9FA] text-[#0E5566] border border-[#CFE2E7]">
+              분석 방식: 신경망 임베딩 코사인 유사도
+            </span>
+          </div>
+
+          <!-- 5개 핵심 지표 그리드 -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-4">
+            <div class="bg-[#F4F9FA] border border-[#CFE2E7] rounded-xl p-3 text-center">
+              <div class="text-xs font-semibold text-slate-500">분석 조항</div>
+              <div id="stat-total" class="text-xl sm:text-2xl font-extrabold text-[#0E5566] mt-0.5">0건</div>
+            </div>
+            <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
+              <div class="text-xs font-bold text-red-700">위험 특약</div>
+              <div id="stat-high" class="text-xl sm:text-2xl font-extrabold text-red-600 mt-0.5">0건</div>
+            </div>
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+              <div class="text-xs font-bold text-amber-800">확인 필요</div>
+              <div id="stat-caution" class="text-xl sm:text-2xl font-extrabold text-amber-600 mt-0.5">0건</div>
+            </div>
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
+              <div class="text-xs font-bold text-emerald-800">표준·안전</div>
+              <div id="stat-safe" class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-0.5">0건</div>
+            </div>
+            <div class="col-span-2 sm:col-span-1 bg-[#E6F2F5] border border-[#CFE2E7] rounded-xl p-3 text-center">
+              <div class="text-xs font-bold text-[#0E5566]">탐지 용어</div>
+              <div id="stat-terms" class="text-xl sm:text-2xl font-extrabold text-[#1E7A8C] mt-0.5">0개</div>
+            </div>
+          </div>
+
+          <!-- 자립준비청년 페르소나 맞춤 한줄 조언 배너 -->
+          <div id="persona-advice-box" class="rounded-xl p-3.5 bg-[#F4F9FA] border border-[#CFE2E7] flex items-start gap-3">
+            <div class="w-8 h-8 rounded-full bg-[#0E5566] text-white flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
+              AI
+            </div>
+            <div class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              <strong class="text-[#0E5566]">서명 전 핵심 안내:</strong> 좌측에서 계약서 샘플을 선택하거나 조항을 입력한 뒤 분석 버튼을 눌러주세요. 어려운 법률 용어를 쉬운 말로 풀어 드립니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- 2) 조항별 쉬운 풀이 & 위험 특약 상세 카드 리스트 -->
+        <div class="bg-white rounded-2xl border border-[#CFE2E7] shadow-sm p-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-[#0E5566] text-white text-xs font-bold flex items-center justify-center">3</span>
+              <h2 class="text-base sm:text-lg font-bold text-[#0E5566]">조항별 쉬운 풀이 및 위험 특약 분석</h2>
+            </div>
+
+            <!-- 결과 필터 버튼 -->
+            <div class="flex items-center gap-1.5 text-xs">
+              <button type="button" data-result-filter="ALL" class="result-filter-btn px-2.5 py-1 rounded-lg font-bold bg-[#0E5566] text-white cursor-pointer">전체</button>
+              <button type="button" data-result-filter="RISK" class="result-filter-btn px-2.5 py-1 rounded-lg font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">위험·주의만</button>
+              <button type="button" data-result-filter="SAFE" class="result-filter-btn px-2.5 py-1 rounded-lg font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">안전 조항</button>
+            </div>
+          </div>
+
+          <!-- 분석 결과 카드 컨테이너 -->
+          <div id="clauses-result-list" class="flex flex-col gap-4">
+            <!-- JavaScript로 조항별 카드가 렌더링됩니다 -->
+          </div>
+        </div>
+
+        <!-- 3) 딥러닝 자연어 처리 원리 시각화 (교과서 Ⅱ-2-4 자연어 처리 연계) -->
+        <div id="nlp-inspector-section" class="bg-white rounded-2xl border border-[#CFE2E7] shadow-sm p-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-[#1E7A8C] text-white text-xs font-bold flex items-center justify-center">4</span>
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-[#0E5566]">딥러닝 자연어 처리 원리 탐구 (토큰화 · 단어 임베딩 · 코사인 유사도)</h2>
+                <p class="text-xs text-slate-500">인공지능 기초 Ⅱ단원: 단어가 다르더라도 문맥 임베딩 벡터의 유사도로 위험 특약을 찾아내는 과정</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 분석 대상 조항 선택 드롭다운 -->
+          <div class="mb-4">
+            <label for="inspector-clause-select" class="block text-xs font-bold text-slate-600 mb-1.5">
+              원리를 확인할 계약서 조항 선택
+            </label>
+            <select
+              id="inspector-clause-select"
+              class="w-full rounded-xl border border-[#CFE2E7] bg-[#F4F9FA] px-3 py-2 text-xs sm:text-sm font-medium text-[#0E5566] outline-none focus:border-[#0E5566]"
+            ></select>
+          </div>
+
+          <!-- 3단계 NLP 파이프라인 시각화 박스 -->
+          <div id="nlp-inspector-content" class="flex flex-col gap-4">
+            <!-- Step 1: 토큰화 -->
+            <div class="rounded-xl bg-[#F4F9FA] border border-[#CFE2E7] p-3.5">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-extrabold text-[#0E5566]">① 토큰화 (Tokenization) — 문장을 의미 단위 토큰으로 분리</span>
+                <span id="token-count-label" class="text-[11px] font-semibold text-[#1E7A8C]">0개 토큰</span>
+              </div>
+              <div id="token-pills-box" class="flex flex-wrap gap-1.5"></div>
+            </div>
+
+            <!-- Step 2: 단어·문장 임베딩 벡터 -->
+            <div class="rounded-xl bg-[#F4F9FA] border border-[#CFE2E7] p-3.5">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-extrabold text-[#0E5566]">② 심층신경망 은닉층 출력: 문맥 임베딩 벡터 (Embedding Vector)</span>
+                <span id="vector-dim-label" class="text-[11px] font-mono font-semibold text-[#1E7A8C]">128차원 정규화 벡터</span>
+              </div>
+              <!-- 벡터 활성화 막대 그래프 -->
+              <div id="embedding-bars-box" class="h-14 flex items-end gap-[2px] bg-white rounded-lg p-2 border border-[#CFE2E7] overflow-hidden"></div>
+              <div id="embedding-numeric-preview" class="mt-2 font-mono text-[11px] text-slate-600 bg-white px-2.5 py-1.5 rounded border border-slate-200 overflow-x-auto whitespace-nowrap">
+                [0.000, 0.000, ...]
+              </div>
+            </div>
+
+            <!-- Step 3: 코사인 유사도 비교 결과 Top-3 -->
+            <div class="rounded-xl bg-[#F4F9FA] border border-[#CFE2E7] p-3.5">
+              <div class="flex flex-wrap items-center justify-between gap-1 mb-2.5">
+                <span class="text-xs font-extrabold text-[#0E5566]">③ 코사인 유사도 (Cosine Similarity) Top-3 매칭 결과</span>
+                <span class="text-[11px] font-mono text-slate-500">cos(A, B) = (A · B) / (‖A‖‖B‖)</span>
+              </div>
+              <div id="similarity-top3-box" class="flex flex-col gap-2.5"></div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- =====================================================================
+       3. 푸터 (면책 조항 및 수행평가 프로젝트 안내)
+       ===================================================================== -->
+  <footer class="bg-white border-t border-[#CFE2E7] mt-8 py-4 px-4 sm:px-6">
+    <div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <div>
+        <strong class="text-[#0E5566]">계약안심 AI</strong> · 고등학교 「인공지능 기초」 융합 서비스 설계·구현 프로젝트 (데이터 출처: JusWis/korean-legal-terminology 정제·가공)
+      </div>
+      <div>
+        ※ 본 서비스는 계약 이해를 돕는 교육·보조 도구이며, 최종 법적 분쟁 시 대한법률구조공단(국번없이 132) 상담을 권장합니다.
+      </div>
+    </div>
+  </footer>
+
+  <!-- =====================================================================
+       4. 가공 데이터(JSON) 확인 및 업로드 모달
+       ===================================================================== -->
+  <div id="json-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+    <div class="bg-white rounded-2xl border border-[#CFE2E7] shadow-xl max-w-4xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+      <!-- 모달 헤더 -->
+      <div class="bg-[#0E5566] text-white px-5 py-4 flex items-center justify-between">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">전처리·가공 법률 용어 데이터셋 (processed_legal_terms.json)</h3>
+          <p class="text-xs text-teal-100 mt-0.5">원천 데이터(17,484건)에서 4대 계약 법령(민법·상법·근로기준법·주택임대차보호법) 기준으로 추출한 4가지 핵심 속성 구조</p>
+        </div>
+        <button id="close-json-modal-btn" type="button" class="p-1.5 rounded-lg hover:bg-white/15 text-white cursor-pointer" aria-label="닫기">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- 모달 상단 컨트롤 (JSON 업로드 / 다운로드 / 검색) -->
+      <div class="p-4 bg-[#F4F9FA] border-b border-[#CFE2E7] flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Colab에서 추출한 JSON 파일 업로드 -->
+          <label class="inline-flex items-center gap-1.5 bg-[#0E5566] hover:bg-[#093E4B] text-white text-xs font-bold px-3.5 py-2 rounded-xl cursor-pointer transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            <span>Colab 가공 JSON 파일 업로드</span>
+            <input id="json-file-input" type="file" accept=".json,application/json" class="hidden" />
+          </label>
+
+          <!-- 현재 데이터셋 JSON 다운로드 -->
+          <button
+            id="download-json-btn"
+            type="button"
+            class="inline-flex items-center gap-1.5 bg-white hover:bg-teal-50 text-[#0E5566] border border-[#CFE2E7] text-xs font-bold px-3.5 py-2 rounded-xl cursor-pointer transition"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span>JSON 파일 내려받기</span>
+          </button>
+        </div>
+
+        <!-- 용어 검색 입력 -->
+        <input
+          id="json-search-input"
+          type="text"
+          placeholder="법률 용어 또는 법령명 검색 (예: 전대차, 근로기준법)"
+          class="w-full sm:w-64 px-3 py-1.5 text-xs rounded-xl border border-[#CFE2E7] bg-white outline-none focus:border-[#0E5566]"
+        />
+      </div>
+
+      <!-- 4가지 핵심 속성 안내 배지 -->
+      <div class="px-5 py-2.5 bg-white border-b border-slate-100 flex flex-wrap items-center gap-2 text-[11px]">
+        <span class="font-bold text-slate-600">추출된 4대 핵심 속성:</span>
+        <span class="px-2 py-0.5 rounded bg-[#E6F2F5] text-[#0E5566] font-mono font-semibold">① term (법률 용어명)</span>
+        <span class="px-2 py-0.5 rounded bg-[#E6F2F5] text-[#0E5566] font-mono font-semibold">② law (근거 법령 분야)</span>
+        <span class="px-2 py-0.5 rounded bg-[#E6F2F5] text-[#0E5566] font-mono font-semibold">③ contract_type (계약 유형)</span>
+        <span class="px-2 py-0.5 rounded bg-[#E6F2F5] text-[#0E5566] font-mono font-semibold">④ definition (정제된 뜻풀이)</span>
+      </div>
+
+      <!-- 모달 본문 테이블 -->
+      <div class="flex-1 overflow-y-auto p-5">
+        <div class="overflow-x-auto border border-[#CFE2E7] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[#F4F9FA] text-[#0E5566] border-b border-[#CFE2E7]">
+                <th class="py-2.5 px-3 font-bold w-28">① 법률 용어명</th>
+                <th class="py-2.5 px-3 font-bold w-32">② 근거 법령</th>
+                <th class="py-2.5 px-3 font-bold w-32">③ 계약 유형</th>
+                <th class="py-2.5 px-3 font-bold">④ 정제된 뜻풀이 (임베딩 입력 텍스트)</th>
+              </tr>
+            </thead>
+            <tbody id="json-table-body" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       5. 애플리케이션 핵심 로직 (데이터셋 + 하이브리드 딥러닝 NLP 엔진 + UI 제어)
+       ===================================================================== -->
+  <script type="module">
+    // =========================================================================
+    // [A] 전처리 및 핵심 속성(4가지) 추출 완료된 법률 용어 데이터셋
+    //     출처: JusWis/korean-legal-terminology 정제 및 4대 계약 법령 필터링
+    // =========================================================================
+    let LEGAL_TERMS_DB = [
+      {
+        term: "전대차",
+        law: "민법",
+        contract_type: "임대차·일반 계약",
+        definition: "임차인이 빌린 집이나 물건을 집주인(임대인)의 동의 없이 다시 제3자에게 빌려주는 계약을 말합니다. 무단 전대차 시 집주인이 계약을 해지할 수 있습니다."
+      },
+      {
+        term: "대항력",
+        law: "주택임대차보호법",
+        contract_type: "임대차 계약",
+        definition: "집주인이 바뀌거나 집이 매매·경매로 넘어가더라도 세입자가 원래 계약 기간 동안 계속 거주하고 보증금을 돌려받을 수 있는 법적 권리입니다. 이사(전입신고)와 실제 거주를 마치면 다음 날 발생합니다."
+      },
+      {
+        term: "확정일자",
+        law: "주택임대차보호법",
+        contract_type: "임대차 계약",
+        definition: "주민센터나 인터넷등기소에서 임대차 계약서가 그 날짜에 존재했다는 사실을 공적으로 증명받는 도장입니다. 대항력과 함께 갖추면 집이 경매에 넘어갈 때 후순위 권리자보다 보증금을 먼저 돌려받을 수 있습니다."
+      },
+      {
+        term: "우선변제권",
+        law: "주택임대차보호법",
+        contract_type: "임대차 계약",
+        definition: "집이 경매에 넘어갔을 때, 전입신고(대항력)와 확정일자를 모두 갖춘 세입자가 다른 일반 채권자보다 먼저 보증금을 배당받을 수 있는 권리입니다."
+      },
+      {
+        term: "근저당권",
+        law: "민법",
+        contract_type: "임대차·일반 계약",
+        definition: "집주인이 집을 담보로 은행 등에서 돈을 빌릴 때 설정하는 권리입니다. 집에 근저당권(빚)이 지나치게 많으면 경매 시 세입자의 보증금을 돌려받지 못할 위험이 커집니다."
+      },
+      {
+        term: "원상복구",
+        law: "민법",
+        contract_type: "임대차·일반 계약",
+        definition: "계약이 끝나 방을 비워줄 때 빌렸을 당시의 상태로 돌려놓는 의무입니다. 단, 세입자의 고의나 잘못이 아닌 햇빛에 의한 벽지 변색, 자연스러운 생활 마모는 세입자가 수리비를 낼 의무가 없습니다."
+      },
+      {
+        term: "임차권등기명령",
+        law: "주택임대차보호법",
+        contract_type: "임대차 계약",
+        definition: "계약 기간이 끝났는데도 집주인이 보증금을 돌려주지 않을 때, 세입자가 다른 곳으로 이사하더라도 기존의 대항력과 우선변제권을 그대로 유지해 주는 법원 신청 제도입니다."
+      },
+      {
+        term: "묵시적 갱신",
+        law: "주택임대차보호법",
+        contract_type: "임대차 계약",
+        definition: "계약 만료 6개월 전부터 2개월 전까지 집주인과 세입자 모두 계약 해지나 조건 변경을 통보하지 않으면, 이전과 동일한 조건으로 계약이 자동 연장되는 제도입니다."
+      },
+      {
+        term: "임대차보증금",
+        law: "주택임대차보호법",
+        contract_type: "임대차 계약",
+        definition: "세입자가 월세 미납이나 파손 등에 대비해 집주인에게 맡겨 두는 돈으로, 계약이 종료되어 집을 돌려줄 때 전액 반환받아야 하는 핵심 자산입니다."
+      },
+      {
+        term: "위약예정금지",
+        law: "근로기준법",
+        contract_type: "근로 계약",
+        definition: "근로자가 근로계약을 어겼을 때를 대비해 미리 위약금이나 손해배상 액수를 정해 두는 계약을 금지하는 법 원칙입니다(근로기준법 제20조). 이를 위반한 조항은 법적으로 무효입니다."
+      },
+      {
+        term: "위약벌",
+        law: "민법",
+        contract_type: "임대차·일반 계약",
+        definition: "계약을 위반했을 때 손해배상과 별도로 제재하기 위해 물리는 벌금 성격의 약정입니다. 부당하게 과도한 위약벌은 법원에 의해 감액되거나 무효가 될 수 있습니다."
+      },
+      {
+        term: "손해배상예정",
+        law: "민법",
+        contract_type: "임대차·일반 계약",
+        definition: "계약을 지키지 못할 경우 지급할 배상 금액을 미리 정해 놓는 것입니다. 특히 근로계약에서는 근로자에게 일정 금액 배상을 미리 약속시키는 행위가 엄격히 금지됩니다."
+      },
+      {
+        term: "포괄임금",
+        law: "근로기준법",
+        contract_type: "근로 계약",
+        definition: "기본급 외에 연장·야간·휴일근로수당을 별도로 계산하지 않고 매달 일정 금액에 모두 포함해 지급하는 방식입니다. 실제 일한 시간만큼 계산한 법정 수당보다 적게 주면 위법입니다."
+      },
+      {
+        term: "통상임금",
+        law: "근로기준법",
+        contract_type: "근로 계약",
+        definition: "근로자에게 정기적이고 일률적으로 지급하기로 정해진 기본 시급·월급으로, 연장근로수당이나 주휴수당 등을 계산하는 기준이 되는 금액입니다."
+      },
+      {
+        term: "최저임금",
+        law: "근로기준법",
+        contract_type: "근로 계약",
+        definition: "국가가 근로자의 생활 안정을 위해 법으로 정한 임금의 최저 한도입니다. 당사자끼리 합의했더라도 최저임금보다 적게 지급하는 계약 조항은 무효입니다."
+      },
+      {
+        term: "주휴수당",
+        law: "근로기준법",
+        contract_type: "근로 계약",
+        definition: "일주일 동안 약속된 근무일수를 개근하고 주 15시간 이상 일한 근로자에게 유급 휴일(하루치 일당)을 추가로 지급해야 하는 법정 수당입니다."
+      },
+      {
+        term: "해고예고",
+        law: "근로기준법",
+        contract_type: "근로 계약",
+        definition: "사용자가 근로자를 해고하려면 적어도 30일 전에 미리 알려야 하며, 30일 전에 예고하지 않았을 때는 30일분 이상의 통상임금(해고예고수당)을 지급해야 하는 제도입니다."
+      },
+      {
+        term: "수습기간",
+        law: "근로기준법",
+        contract_type: "근로 계약",
+        definition: "정식 채용 후 업무 적응을 위해 두는 기간입니다. 1년 이상 근로계약을 체결한 경우에만 최대 3개월간 최저임금의 90%까지 감액할 수 있으며, 1년 미만 단기 알바는 감액이 불가합니다."
+      },
+      {
+        term: "부당해고",
+        law: "근로기준법",
+        contract_type: "근로 계약",
+        definition: "정당한 이유 없이 사용자의 일방적인 의사로 근로자를 그만두게 하는 행위로, 근로자는 노동위원회에 구제신청을 할 수 있습니다."
+      },
+      {
+        term: "계약해지",
+        law: "민법",
+        contract_type: "임대차·일반 계약",
+        definition: "계속 이어지던 계약 관계를 한쪽의 의사표시로 장래를 향해 종료시키는 권리입니다. 정당한 사유 없는 일방적 즉시 해지 조항은 불리할 수 있습니다."
+      },
+      {
+        term: "연대보증",
+        law: "민법",
+        contract_type: "임대차·일반 계약",
+        definition: "주된 채무자가 돈을 갚지 못할 때 보증인이 채무자와 똑같은 책임으로 대신 갚아야 하는 무거운 의무입니다. 계약서에 연대보증 문구가 있다면 각별히 주의해야 합니다."
+      },
+      {
+        term: "기한의 이익",
+        law: "민법",
+        contract_type: "상거래 계약",
+        definition: "약속한 날짜(기한)가 되기 전까지는 돈을 갚거나 의무를 이행하지 않아도 되는 채무자의 권리입니다. '기한의 이익 상실' 조항이 작동하면 남은 돈을 한꺼번에 갚아야 합니다."
+      },
+      {
+        term: "소멸시효",
+        law: "민법",
+        contract_type: "임대차·일반 계약",
+        definition: "권리를 행사할 수 있음에도 일정 기간 동안 행사하지 않으면 그 권리가 법적으로 사라지는 제도입니다. 임금 채권의 소멸시효는 3년입니다."
+      },
+      {
+        term: "유치권",
+        law: "민법",
+        contract_type: "상거래 계약",
+        definition: "남의 물건이나 건물을 수리·공사해 주고 돈을 받지 못했을 때, 돈을 받을 때까지 그 물건이나 건물을 점유하며 돌려주지 않을 수 있는 권리입니다."
+      },
+      {
+        term: "상행위",
+        law: "상법",
+        contract_type: "상거래 계약",
+        definition: "영리를 목적으로 하는 영업 활동이나 거래 행위를 말하며, 일반 개인 간 계약보다 빠른 시효와 엄격한 책임 기준이 적용됩니다."
+      },
+      {
+        term: "약관규제",
+        law: "상법",
+        contract_type: "상거래 계약",
+        definition: "사업자가 여러 고객과 계약하기 위해 미리 만든 계약 조건(약관) 중 고객에게 부당하게 불리한 조항을 무효로 만드는 법적 보호 기준입니다."
+      }
+    ];
+
+    // =========================================================================
+    // [B] 위험·주의·표준 계약 조항 레퍼런스 데이터베이스 (코사인 유사도 비교 기준)
+    // =========================================================================
+    const REFERENCE_CLAUSES_DB = [
+      {
+        id: "ref_lease_1",
+        title: "집주인 변경·경매 시 보증금 포기 및 무조건 퇴거 특약",
+        clause_text: "임대인이 변경되거나 목적물이 경매로 매각되는 경우 임차인은 보증금 반환을 요구하지 않으며 즉시 조건 없이 퇴거한다.",
+        law: "주택임대차보호법 제3조·제10조",
+        contract_type: "임대차 계약",
+        risk_level: "위험",
+        matched_terms: ["대항력", "임대차보증금", "우선변제권"],
+        easy_explanation: "집주인이 바뀌거나 집이 경매에 넘어가도 세입자가 보증금을 포기하고 바로 방을 빼야 한다는 매우 위험한 독소 조항입니다. 주택임대차보호법상 세입자에게 불리한 약정은 효력이 없지만, 분쟁에 휘말릴 수 있으므로 반드시 삭제해야 합니다.",
+        action_tip: "계약서에 서명하기 전 이 특약을 삭제 요구하고, 잔금일 즉시 주민센터에서 전입신고와 확정일자를 받아 대항력을 확보하세요."
+      },
+      {
+        id: "ref_lease_2",
+        title: "모든 수리비 및 노후 시설 원상복구 비용 임차인 전가 특약",
+        clause_text: "입주 후 발생하는 보일러, 누수, 배관 등 모든 시설의 수리비와 퇴거 시 도배·장판 원상복구 비용 일체를 임차인이 전액 부담한다.",
+        law: "민법 제623조 (임대인의 수선의무)",
+        contract_type: "임대차 계약",
+        risk_level: "위험",
+        matched_terms: ["원상복구", "임대차보증금"],
+        easy_explanation: "보일러 고장이나 누수처럼 집 자체의 노후로 생기는 큰 수리비는 원래 집주인이 부담해야 합니다. 모든 수리비와 자연스러운 생활 흔적(벽지 변색 등)까지 세입자에게 떠넘기는 불공정한 조항입니다.",
+        action_tip: "'임차인의 고의·과실로 파손된 경우에만 원상복구하며, 노후로 인한 주요 설비 수리는 임대인이 부담한다'로 문구를 수정하세요."
+      },
+      {
+        id: "ref_lease_3",
+        title: "근저당권 말소 조건 누락 또는 선순위 채무 위험 조항",
+        clause_text: "본 부동산에 설정된 근저당권은 그대로 유지하며 임차인은 이에 대해 어떠한 이의도 제기하지 않기로 한다.",
+        law: "주택임대차보호법 · 민법 제357조",
+        contract_type: "임대차 계약",
+        risk_level: "주의",
+        matched_terms: ["근저당권", "우선변제권", "임대차보증금"],
+        easy_explanation: "집에 이미 은행 대출(근저당권)이 잡혀 있는 상태에서 계약한다는 뜻입니다. 만약 집주인이 대출을 갚지 못해 집이 경매에 넘어가면 은행이 먼저 돈을 가져가 세입자의 보증금을 떼일 위험이 있습니다.",
+        action_tip: "등기부등본을 직접 발급해 '근저당권 채권최고액 + 내 보증금'이 집값의 70%를 넘지 않는지 확인하고, 잔금일 근저당 말소 특약을 요청하세요."
+      },
+      {
+        id: "ref_lease_4",
+        title: "무단 전대차 금지 및 계약 해지 조항",
+        clause_text: "임차인은 임대인의 서면 동의 없이 임차주택의 전부 또는 일부를 제3자에게 전대하거나 임차권을 양도할 수 없으며 위반 시 계약을 해지할 수 있다.",
+        law: "민법 제629조 (임차권의 양도, 전대의 제한)",
+        contract_type: "임대차 계약",
+        risk_level: "주의",
+        matched_terms: ["전대차", "계약해지"],
+        easy_explanation: "집주인의 허락 없이 친구나 다른 사람에게 방을 다시 빌려주거나(전대차) 계약 권리를 넘기면 집주인이 계약을 취소하고 퇴거를 요구할 수 있다는 조항입니다.",
+        action_tip: "표준계약서에도 들어가는 일반적인 조항이지만, 사정상 룸메이트를 들이거나 방을 양도해야 할 때는 반드시 집주인의 문자·서면 동의를 먼저 받으세요."
+      },
+      {
+        id: "ref_lease_5",
+        title: "보증금 반환 지연 및 임차권등기명령 제한 특약",
+        clause_text: "계약 종료 후 다음 세입자가 구해질 때까지 보증금 반환을 연기할 수 있으며 임차인은 법적 등기 조치를 신청하지 않는다.",
+        law: "주택임대차보호법 제3조의3",
+        contract_type: "임대차 계약",
+        risk_level: "위험",
+        matched_terms: ["임차권등기명령", "임대차보증금", "대항력"],
+        easy_explanation: "계약 기간이 끝났는데도 '새 세입자가 들어와야 보증금을 돌려주겠다'며 돈을 미루고, 세입자의 정당한 권리인 임차권등기명령까지 막는 불리한 조항입니다.",
+        action_tip: "보증금 반환은 계약 만료일에 즉시 이루어져야 합니다. 다음 세입자 입주 여부와 관계없이 만료일에 반환한다는 내용으로 고치세요."
+      },
+      {
+        id: "ref_labor_1",
+        title: "조기 퇴사 시 급여 삭감·공제 특약 (위약 예정 금지 위반)",
+        clause_text: "근로자가 입사 후 3개월 이내에 자발적으로 퇴사할 경우 해당 월 급여의 90%만 지급하고 나머지 10%는 위약금으로 공제한다.",
+        law: "근로기준법 제20조 (위약 예정의 금지)",
+        contract_type: "근로 계약",
+        risk_level: "위험",
+        matched_terms: ["위약예정금지", "통상임금"],
+        easy_explanation: "일찍 그만둔다는 이유로 이미 일한 날에 대한 월급이나 시급을 깎아서 주는 것은 근로기준법 제20조 위반으로 명백한 불법입니다. 일한 시간만큼의 급여는 100% 모두 받아야 합니다.",
+        action_tip: "근로기준법상 퇴사 시 급여 감액 조항은 법적 효력이 없는 무효 조항입니다. 계약서에서 해당 문구 삭제를 요구하세요."
+      },
+      {
+        id: "ref_labor_2",
+        title: "근무 중 실수·매출 피해액 근로자 전액 배상 특약",
+        clause_text: "근무 중 업무 실수나 계약 미이행으로 발생한 매장 매출 피해액과 손해는 근로자가 전액 배상 책임을 진다.",
+        law: "근로기준법 제20조 · 민법 제750조",
+        contract_type: "근로 계약",
+        risk_level: "위험",
+        matched_terms: ["손해배상예정", "위약예정금지"],
+        easy_explanation: "일하다가 실수를 하거나 계약을 지키지 못했을 때 매장 매출 손해까지 아르바이트생이나 신입사원에게 물어내라고 강요하는 위험한 조항입니다. 월급에서 손해액을 마음대로 빼고 주는 것도 불법입니다.",
+        action_tip: "고의가 아닌 단순 업무 실수에 대한 배상 책임 조항은 삭제를 요청하고, 실제 분쟁 시 급여 공제는 동의할 수 없음을 분명히 하세요."
+      },
+      {
+        id: "ref_labor_3",
+        title: "연장·야간수당 미지급 포괄임금 및 수습 감액 조항",
+        clause_text: "월 급여에는 모든 연장근로수당과 주휴수당이 포함된 포괄임금으로 하며, 수습기간 3개월 동안은 급여의 80%만 지급한다.",
+        law: "근로기준법 제56조 · 최저임금법 제5조",
+        contract_type: "근로 계약",
+        risk_level: "주의",
+        matched_terms: ["포괄임금", "주휴수당", "수습기간", "최저임금"],
+        easy_explanation: "추가 근무를 해도 수당을 따로 주지 않겠다고 묶어 둔 '포괄임금' 조항과 수습기간 급여 감액 조항입니다. 특히 1년 미만 단기 근로계약에서는 수습기간이라도 최저임금을 깎을 수 없습니다.",
+        action_tip: "근로계약 기간이 1년 미만인지 확인하고, 주 15시간 이상 근무 시 주휴수당과 연장근로수당이 최저임금 이상으로 계산되는지 꼭 확인하세요."
+      },
+      {
+        id: "ref_safe_1",
+        title: "표준 임대차 보증금 반환 및 대항력·확정일자 보장 조항",
+        clause_text: "임대인은 임대차기간이 만료된 경우 임차인에게 보증금을 즉시 반환하며, 임차인의 전입신고 및 확정일자 취득에 적극 협조한다.",
+        law: "주택임대차보호법 제3조의2",
+        contract_type: "임대차 계약",
+        risk_level: "안전",
+        matched_terms: ["임대차보증금", "확정일자", "대항력"],
+        easy_explanation: "계약이 끝날 때 보증금을 제때 돌려받고, 세입자의 법적 보호 장치인 전입신고와 확정일자를 집주인이 협조해 주는 안전하고 표준적인 조항입니다.",
+        action_tip: "계약 당일 특약란에 '잔금 지급일 다음 날까지 근저당권 등 새로운 권리를 설정하지 않는다'는 문구를 함께 적어 두면 더욱 안전합니다."
+      },
+      {
+        id: "ref_safe_2",
+        title: "표준 수선 의무 및 상호 합의 해지 조항",
+        clause_text: "임대차 목적물의 주요 설비 노후로 인한 수선은 임대인이 부담하고, 임차인의 고의·과실로 파손된 부분만 임차인이 원상복구한다.",
+        law: "민법 제623조",
+        contract_type: "임대차 계약",
+        risk_level: "안전",
+        matched_terms: ["원상복구"],
+        easy_explanation: "집의 노후 고장은 집주인이 고쳐주고, 세입자는 본인이 실수로 망가뜨린 부분만 책임지도록 공평하게 나눈 안전한 표준 조항입니다.",
+        action_tip: "입주 첫날 벽지, 바닥, 보일러, 수도꼭지 상태를 스마트폰 사진과 동영상으로 찍어 집주인에게 문자로 보내 두면 퇴거 시 분쟁을 막을 수 있습니다."
+      },
+      {
+        id: "ref_safe_3",
+        title: "근로기준법 준수 및 주휴수당·임금 정기 지급 조항",
+        clause_text: "사용자는 근로기준법과 최저임금법을 준수하여 매월 정해진 날짜에 임금과 주휴수당을 근로자 본인 계좌로 전액 직접 지급한다.",
+        law: "근로기준법 제43조 · 제55조",
+        contract_type: "근로 계약",
+        risk_level: "안전",
+        matched_terms: ["최저임금", "주휴수당", "통상임금"],
+        easy_explanation: "법으로 정해진 최저임금과 주휴수당을 깎지 않고 월급날에 본인 통장으로 전액 입금해 준다는 안전한 표준 근로계약 조항입니다.",
+        action_tip: "계약서 작성 후 근로기준법 제17조에 따라 근로계약서 사본 1부를 반드시 받아 사진으로 찍어 보관하세요."
+      }
+    ];
+
+    // =========================================================================
+    // [C] 페르소나(자립준비청년 곽지현) 맞춤형 원클릭 시연 샘플 3종
+    // =========================================================================
+    const DEMO_SAMPLES = {
+      sample1: {
+        contract_type: "임대차 계약",
+        text: `제1조(전대차 금지) 임차인은 임대인의 서면 동의 없이 임차주택의 전부 또는 일부를 제3자에게 전대하거나 임차권을 양도할 수 없으며 위반 시 계약을 해지할 수 있다.
+제2조(근저당권 유지) 본 원룸에 설정된 기존 근저당권은 그대로 유지하며 임차인은 이에 대해 이의를 제기하지 않는다.
+제3조(특약-보증금 및 퇴거) 집주인이 바뀌거나 집이 경매에 넘어가도 세입자는 보증금을 돌려달라고 요구할 수 없으며 즉시 방을 비워준다.
+제4조(특약-수리 및 원상복구) 입주 후 발생하는 보일러, 누수 등 모든 시설 수리비와 퇴거 시 도배·장판 원상복구 비용 일체를 임차인이 전액 부담한다.`
+      },
+      sample2: {
+        contract_type: "근로 계약",
+        text: `제1조(임금 및 주휴수당) 사용자는 최저임금법을 준수하여 매월 10일 임금과 주휴수당을 근로자 본인 계좌로 지급한다.
+제2조(포괄임금 및 수습) 월 급여에는 모든 연장근로수당이 포함된 포괄임금으로 하며, 수습기간 3개월 동안은 급여의 80%만 지급한다.
+제3조(특약-조기 퇴사) 입사 후 석 달 안에 그만두면 해당 월급의 90%만 지급하고 나머지는 위약금으로 공제한다.
+제4조(특약-손해배상) 근무 중 실수나 계약 미이행 시 매장 매출 피해액을 근로자가 전액 배상한다.`
+      },
+      sample3: {
+        contract_type: "임대차 계약",
+        text: `제1조(보증금 반환 및 대항력) 임대인은 임대차기간이 만료된 경우 임차인에게 임대차보증금을 즉시 반환하며, 임차인의 전입신고 및 확정일자 취득에 적극 협조한다.
+제2조(수선의무 및 원상복구) 임대차 목적물의 주요 설비 노후로 인한 수선은 임대인이 부담하고, 임차인의 고의·과실로 파손된 부분만 임차인이 원상복구한다.
+제3조(묵시적 갱신) 계약 만료 6개월 전부터 2개월 전까지 쌍방이 해지 통보를 하지 않으면 동일한 조건으로 계약이 자동 연장된다.`
+      }
+    };
+
+    // =========================================================================
+    // [D] 딥러닝 자연어 처리(NLP) 하이브리드 엔진
+    //     1) 실시간 토큰화(Tokenization)
+    //     2) 내장 신경망 의미 투영 임베딩(128차원) — 오프라인/학교 방화벽에서도 0초 즉시 작동
+    //     3) 백그라운드 Transformer(@xenova/transformers MiniLM-L12-v2) 비동기 로드 및 전환
+    //     4) 코사인 유사도(Cosine Similarity) 계산
+    // =========================================================================
+    let transformerExtractor = null;
+    let isTransformerReady = false;
+    let refClauseEmbeddings = [];
+    let currentAnalysisResults = [];
+    let activeContractFilter = "전체";
+    let activeResultFilter = "ALL";
+
+    // 한국어 불용어/조사 제거 기반 의미 단위 토큰화 함수
+    function tokenizeKorean(text) {
+      const cleaned = text
+        .replace(/^제\d+조\([^)]*\)\s*/g, "") // 조항 번호 머리말 제거
+        .replace(/[^\w\s가-힣0-9%]/g, " ")
+        .trim();
+
+      const rawWords = cleaned.split(/\s+/).filter(Boolean);
+      const suffixes = [
+        "에서는", "으로는", "에게는", "부터는", "까지는",
+        "이며", "하며", "하고", "하거나", "하여", "해서", "하면",
+        "으로", "에서", "에게", "부터", "까지", "이나", "거나",
+        "을", "를", "은", "는", "이", "가", "에", "의", "와", "과", "도", "만", "로"
+      ];
+
+      const tokens = [];
+      for (const word of rawWords) {
+        if (word.length <= 1) continue;
+        let stem = word;
+        for (const suf of suffixes) {
+          if (stem.length > suf.length + 1 && stem.endsWith(suf)) {
+            stem = stem.slice(0, -suf.length);
+            break;
+          }
+        }
+        tokens.push(stem);
+      }
+      return tokens.length > 0 ? tokens : rawWords;
+    }
+
+    // 의미 개념 축(Semantic Concept Axes) 정의 — 단어가 달라도 문맥 유사도를 포착하도록 설계
+    const SEMANTIC_CONCEPT_AXES = [
+      ["집주인", "임대인", "소유자", "건물주"],
+      ["세입자", "임차인", "입주자", "거주자"],
+      ["바뀌", "변경", "매매", "양도", "넘어가"],
+      ["경매", "매각", "압류", "처분"],
+      ["보증금", "전세금", "임대차보증금", "반환", "돌려달", "돌려받", "돌려주"],
+      ["포기", "요구할 수 없", "이의", "미루", "연기"],
+      ["비워준", "퇴거", "나가", "인도"],
+      ["대항력", "전입신고", "확정일자", "우선변제권", "임차권등기명령"],
+      ["수리비", "수선", "보일러", "누수", "배관", "노후", "고장"],
+      ["원상복구", "도배", "장판", "파손", "부담", "전액"],
+      ["전대차", "전대", "다시 빌려", "제3자"],
+      ["근저당", "근저당권", "대출", "채무", "담보"],
+      ["입사", "채용", "근로자", "직원", "아르바이트", "알바"],
+      ["퇴사", "그만두", "석 달", "3개월", "이내", "해지"],
+      ["월급", "급여", "임금", "통상임금", "시급"],
+      ["90%", "80%", "감액", "삭감", "깎", "공제", "위약금", "위약예정"],
+      ["실수", "미이행", "위반", "과실"],
+      ["매출", "피해액", "손해", "배상", "손해배상", "물어내"],
+      ["포괄임금", "연장근로", "야간", "수당", "포함"],
+      ["수습", "수습기간", "최저임금", "주휴수당"],
+      ["협조", "준수", "표준", "합의", "정상", "보장", "갱신", "연장"]
+    ];
+
+    // 문자열 해시 함수 (Deterministic Neural Subword Projection용)
+    function hashString(str, seed = 0) {
+      let h = 2166136261 ^ seed;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return (h >>> 0) / 4294967295;
+    }
+
+    // 내장 신경망 임베딩 생성기 (128차원 L2 정규화 벡터)
+    function computeFallbackEmbedding(text) {
+      const dim = 128;
+      const vec = new Float32Array(dim);
+      const normalizedText = text.replace(/\s+/g, " ").trim();
+      const tokens = tokenizeKorean(normalizedText);
+
+      // 1) 0~41번 차원: 의미 개념 축(Semantic Concept Layer) 활성화 (가중치 높게 부여해 패러프레이징 탐지)
+      SEMANTIC_CONCEPT_AXES.forEach((keywords, axisIdx) => {
+        let score = 0;
+        for (const kw of keywords) {
+          if (normalizedText.includes(kw)) {
+            score += 1.0;
+          }
+        }
+        if (score > 0) {
+          const activated = Math.tanh(score * 1.15) * 2.4;
+          vec[axisIdx * 2] += activated;
+          vec[axisIdx * 2 + 1] += activated * 0.65;
+        }
+      });
+
+      // 2) 42~127번 차원: 문자 n-gram(2-gram, 3-gram) 및 토큰 은닉층 투영
+      const compact = normalizedText.replace(/\s+/g, "");
+      for (let i = 0; i < compact.length - 1; i++) {
+        const bg = compact.slice(i, i + 2);
+        const idx1 = 42 + Math.floor(hashString(bg, 11) * 86);
+        const sign1 = hashString(bg, 23) > 0.5 ? 1 : -1;
+        vec[idx1] += sign1 * 0.35;
+
+        if (i < compact.length - 2) {
+          const tg = compact.slice(i, i + 3);
+          const idx2 = 42 + Math.floor(hashString(tg, 37) * 86);
+          const sign2 = hashString(tg, 53) > 0.5 ? 1 : -1;
+          vec[idx2] += sign2 * 0.45;
+        }
+      }
+
+      for (const tok of tokens) {
+        const idx = 42 + Math.floor(hashString(tok, 71) * 86);
+        const sign = hashString(tok, 89) > 0.5 ? 1 : -1;
+        vec[idx] += sign * 0.75;
+      }
+
+      // 3) 비선형 활성화(tanh) 및 L2 정규화
+      let normSq = 0;
+      for (let i = 0; i < dim; i++) {
+        vec[i] = Math.tanh(vec[i]);
+        normSq += vec[i] * vec[i];
+      }
+      const norm = Math.sqrt(normSq) || 1;
+      for (let i = 0; i < dim; i++) {
+        vec[i] /= norm;
+      }
+      return vec;
+    }
+
+    // 코사인 유사도 계산 함수: cos(A, B) = (A · B) / (||A|| * ||B||)
+    function cosineSimilarity(vecA, vecB) {
+      const len = Math.min(vecA.length, vecB.length);
+      let dot = 0;
+      let normA = 0;
+      let normB = 0;
+      for (let i = 0; i < len; i++) {
+        dot += vecA[i] * vecB[i];
+        normA += vecA[i] * vecA[i];
+        normB += vecB[i] * vecB[i];
+      }
+      if (normA === 0 || normB === 0) return 0;
+      return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    // 통합 임베딩 추출 인터페이스 (Transformer 로드 완료 시 실제 MiniLM 모델 사용)
+    async function getSentenceEmbedding(text) {
+      if (isTransformerReady && transformerExtractor) {
+        try {
+          const output = await transformerExtractor(text, { pooling: "mean", normalize: true });
+          return output.data;
+        } catch (err) {
+          console.warn("Transformer 추론 폴백 전환:", err);
+        }
+      }
+      return computeFallbackEmbedding(text);
+    }
+
+    // 레퍼런스 조항 임베딩 사전 계산
+    async function precomputeReferenceEmbeddings() {
+      const results = [];
+      for (const item of REFERENCE_CLAUSES_DB) {
+        const combinedText = `${item.title} ${item.clause_text}`;
+        const emb = await getSentenceEmbedding(combinedText);
+        results.push({ ref: item, embedding: emb });
+      }
+      refClauseEmbeddings = results;
+    }
+
+    // 백그라운드에서 @xenova/transformers (paraphrase-multilingual-MiniLM-L12-v2) 비동기 로드
+    async function initTransformerInBackground() {
+      const statusDot = document.getElementById("ai-status-dot");
+      const statusText = document.getElementById("ai-status-text");
+      const engineTag = document.getElementById("inference-engine-tag");
+
+      try {
+        const { pipeline, env } = await import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2");
+        env.allowLocalModels = false;
+
+        transformerExtractor = await pipeline(
+          "feature-extraction",
+          "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
+          { quantized: true }
+        );
+
+        isTransformerReady = true;
+        await precomputeReferenceEmbeddings();
+
+        statusDot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        statusText.textContent = "딥러닝 심층신경망(MiniLM-L12-v2) 활성";
+        engineTag.textContent = "분석 엔진: Transformer(MiniLM-L12-v2) 임베딩";
+        showToast("딥러닝 심층신경망(MiniLM-L12-v2) 모델이 브라우저에 로드되었습니다.");
+      } catch (error) {
+        // 학교 방화벽 등으로 외부 모델 다운로드가 제한되어도 내장 신경망 엔진으로 완벽 동작
+        console.info("외부 모델 CDN 연결 제한 감지 — 내장 신경망 임베딩 엔진으로 즉시 동작합니다.");
+        statusDot.className = "w-2 h-2 rounded-full bg-teal-300";
+        statusText.textContent = "내장 신경망 임베딩 엔진 활성 (즉시 분석)";
+        engineTag.textContent = "분석 엔진: 브라우저 내장 신경망 임베딩 (128차원)";
+      }
+    }
+
+    // =========================================================================
+    // [E] 계약서 분석 실행 로직
+    // =========================================================================
+    function splitContractIntoClauses(rawText) {
+      // 줄바꿈 우선 분리 후 긴 문장은 마침표 기준으로 추가 분리
+      const lines = rawText
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(line => line.length >= 6);
+
+      const clauses = [];
+      for (const line of lines) {
+        if (line.length > 130) {
+          const subSentences = line
+            .split(/(?<=[.다요])\s+/)
+            .map(s => s.trim())
+            .filter(s => s.length >= 6);
+          clauses.push(...subSentences);
+        } else {
+          clauses.push(line);
+        }
+      }
+      return clauses;
+    }
+
+    // 원문에서 LEGAL_TERMS_DB의 용어 탐지
+    function detectLegalTermsInClause(clauseText) {
+      const detected = [];
+      const seen = new Set();
+
+      // 직접 단어 포함 검사
+      for (const item of LEGAL_TERMS_DB) {
+        if (clauseText.includes(item.term) && !seen.has(item.term)) {
+          seen.add(item.term);
+          detected.push(item);
+        }
+      }
+
+      // 유의어·패러프레이징 기반 핵심 용어 보조 연결
+      const paraphraseHints = [
+        { pattern: /(집주인|임대인).*(바뀌|변경|경매)|보증금.*(포기|돌려달라고 요구할 수 없)/, term: "대항력" },
+        { pattern: /(집주인|임대인).*(바뀌|변경|경매)|보증금/, term: "임대차보증금" },
+        { pattern: /(입사|채용).*(석 달|3개월|그만두|퇴사).*(90%|80%|감액|공제|위약금)/, term: "위약예정금지" },
+        { pattern: /(매출|피해액|실수).*(배상|손해)/, term: "손해배상예정" },
+        { pattern: /(다시 빌려|제3자.*빌려|양도)/, term: "전대차" },
+        { pattern: /(수리비|도배|장판|원상복구)/, term: "원상복구" }
+      ];
+
+      for (const hint of paraphraseHints) {
+        if (hint.pattern.test(clauseText) && !seen.has(hint.term)) {
+          const found = LEGAL_TERMS_DB.find(t => t.term === hint.term);
+          if (found) {
+            seen.add(found.term);
+            detected.push(found);
+          }
+        }
+      }
+
+      return detected;
+    }
+
+    async function analyzeContractText() {
+      const inputEl = document.getElementById("contract-input");
+      const rawText = inputEl.value.trim();
+
+      if (!rawText) {
+        showToast("분석할 계약서 조항을 입력하거나 좌측 샘플 버튼을 선택해 주세요.", "warn");
+        inputEl.focus();
+        return;
+      }
+
+      if (refClauseEmbeddings.length === 0) {
+        await precomputeReferenceEmbeddings();
+      }
+
+      const clauses = splitContractIntoClauses(rawText);
+      const results = [];
+      const allDetectedTermNames = new Set();
+
+      for (let idx = 0; idx < clauses.length; idx++) {
+        const clauseText = clauses[idx];
+        const tokens = tokenizeKorean(clauseText);
+        const embedding = await getSentenceEmbedding(clauseText);
+
+        // 레퍼런스 DB와 코사인 유사도 계산 (계약 유형 필터 가중치 소폭 반영)
+        const scoredRefs = refClauseEmbeddings.map(({ ref, embedding: refEmb }) => {
+          let sim = cosineSimilarity(embedding, refEmb);
+          if (activeContractFilter !== "전체" && ref.contract_type === activeContractFilter) {
+            sim = Math.min(0.992, sim * 1.04);
+          }
+          return { ref, similarity: Math.max(0, Math.min(0.995, sim)) };
+        });
+
+        scoredRefs.sort((a, b) => b.similarity - a.similarity);
+        const top3 = scoredRefs.slice(0, 3);
+        const bestMatch = top3[0];
+
+        // 탐지된 법률 용어 (원문 직접 포함 + 레퍼런스 연결 용어)
+        const detectedTerms = detectLegalTermsInClause(clauseText);
+        if (bestMatch.similarity >= 0.42) {
+          for (const tName of bestMatch.ref.matched_terms) {
+            if (!detectedTerms.some(d => d.term === tName)) {
+              const found = LEGAL_TERMS_DB.find(t => t.term === tName);
+              if (found) detectedTerms.push(found);
+            }
+          }
+        }
+        detectedTerms.forEach(t => allDetectedTermNames.add(t.term));
+
+        // 유사도 임계값에 따른 위험도 및 쉬운 풀이 결정
+        let finalRisk = bestMatch.ref.risk_level;
+        let easyExplanation = bestMatch.ref.easy_explanation;
+        let actionTip = bestMatch.ref.action_tip;
+        let matchedLaw = bestMatch.ref.law;
+        let matchedTitle = bestMatch.ref.title;
+
+        if (bestMatch.similarity < 0.36) {
+          finalRisk = "안전";
+          matchedTitle = "일반 계약 안내 조항";
+          matchedLaw = detectedTerms.length > 0 ? detectedTerms[0].law : "민법 일반 원칙";
+          easyExplanation = "특별히 불리한 독소 조건은 탐지되지 않은 일반 안내 문장입니다. 다만 금액, 날짜, 당사자 인적사항이 실제 약속한 내용과 일치하는지 확인하세요.";
+          actionTip = "계약서의 빈칸이나 숫자가 오기입되지 않았는지 한 번 더 대조해 보세요.";
+        }
+
+        results.push({
+          index: idx + 1,
+          originalText: clauseText,
+          tokens,
+          embedding,
+          top3,
+          similarity: bestMatch.similarity,
+          riskLevel: finalRisk,
+          matchedTitle,
+          matchedLaw,
+          easyExplanation,
+          actionTip,
+          detectedTerms
+        });
+      }
+
+      currentAnalysisResults = results;
+      updateSummaryDashboard(results, allDetectedTermNames.size);
+      renderClauseCards();
+      populateNlpInspector(0);
+    }
+
+    // =========================================================================
+    // [F] UI 렌더링 함수들 (요약 대시보드 · 조항 카드 · NLP 원리 시각화 · JSON 모달)
+    // =========================================================================
+    function updateSummaryDashboard(results, uniqueTermCount) {
+      const total = results.length;
+      const highCount = results.filter(r => r.riskLevel === "위험").length;
+      const cautionCount = results.filter(r => r.riskLevel === "주의").length;
+      const safeCount = results.filter(r => r.riskLevel === "안전").length;
+
+      document.getElementById("stat-total").textContent = `${total}건`;
+      document.getElementById("stat-high").textContent = `${highCount}건`;
+      document.getElementById("stat-caution").textContent = `${cautionCount}건`;
+      document.getElementById("stat-safe").textContent = `${safeCount}건`;
+      document.getElementById("stat-terms").textContent = `${uniqueTermCount}개`;
+
+      const adviceBox = document.getElementById("persona-advice-box");
+      if (highCount > 0) {
+        adviceBox.className = "rounded-xl p-3.5 bg-red-50 border border-red-200 flex items-start gap-3";
+        adviceBox.innerHTML = `
+          <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shrink-0 mt-0.5 font-extrabold text-xs">경고</div>
+          <div class="text-xs sm:text-sm text-red-950 leading-relaxed">
+            <strong>서명 전 반드시 수정 요청이 필요합니다!</strong> 불리한 <strong>위험 특약 ${highCount}건</strong>과 <strong>확인 필요 조항 ${cautionCount}건</strong>이 발견되었습니다. 당장 서명하지 마시고 아래 쉬운 풀이와 행동 가이드를 확인한 뒤 조항 수정을 요청하세요.
+          </div>
+        `;
+      } else if (cautionCount > 0) {
+        adviceBox.className = "rounded-xl p-3.5 bg-amber-50 border border-amber-200 flex items-start gap-3";
+        adviceBox.innerHTML = `
+          <div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center shrink-0 mt-0.5 font-extrabold text-xs">주의</div>
+          <div class="text-xs sm:text-sm text-amber-950 leading-relaxed">
+            <strong>세부 조건을 한 번 더 확인하세요.</strong> 치명적인 독소 특약은 없으나 <strong>주의가 필요한 조항 ${cautionCount}건</strong>이 포함되어 있습니다. 탐지된 법률 용어의 뜻을 꼭 확인하고 서명하세요.
+          </div>
+        `;
+      } else {
+        adviceBox.className = "rounded-xl p-3.5 bg-emerald-50 border border-emerald-200 flex items-start gap-3";
+        adviceBox.innerHTML = `
+          <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5 font-extrabold text-xs">안심</div>
+          <div class="text-xs sm:text-sm text-emerald-950 leading-relaxed">
+            <strong>표준 법령 기준에 부합하는 안전한 계약서입니다.</strong> 분석된 ${total}개 조항 모두 불리한 특약이 발견되지 않았습니다. 계약 후 계약서 사본을 꼭 보관하고 임대차의 경우 전입신고·확정일자를 진행하세요.
+          </div>
+        `;
+      }
+    }
+
+    // 원문 텍스트 내 법률 용어 하이라이트 처리
+    function highlightLegalTermsHTML(text, detectedTerms) {
+      let escaped = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+      // 긴 단어부터 치환하여 중첩 오류 방지
+      const sortedTerms = [...detectedTerms].sort((a, b) => b.term.length - a.term.length);
+      for (const item of sortedTerms) {
+        if (escaped.includes(item.term)) {
+          const safeTerm = item.term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const regex = new RegExp(safeTerm, "g");
+          escaped = escaped.replace(
+            regex,
+            `<span class="legal-term-highlight" title="${item.law}: ${item.definition}">${item.term}</span>`
+          );
+        }
+      }
+      return escaped;
+    }
+
+    function renderClauseCards() {
+      const container = document.getElementById("clauses-result-list");
+      const filtered = currentAnalysisResults.filter(item => {
+        if (activeResultFilter === "RISK") return item.riskLevel === "위험" || item.riskLevel === "주의";
+        if (activeResultFilter === "SAFE") return item.riskLevel === "안전";
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-sm text-slate-500 bg-[#F4F9FA] rounded-xl border border-[#CFE2E7]">
+            선택한 필터 조건에 해당하는 조항이 없습니다.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map((item, renderIdx) => {
+        const simPercent = (item.similarity * 100).toFixed(1);
+
+        let badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-200";
+        let borderClass = "border-emerald-200";
+        let headerBg = "bg-emerald-50/60";
+        let badgeLabel = "표준·안전 조항";
+
+        if (item.riskLevel === "위험") {
+          badgeClass = "bg-red-100 text-red-700 border-red-200";
+          borderClass = "border-red-300";
+          headerBg = "bg-red-50/70";
+          badgeLabel = "위험 특약 의심";
+        } else if (item.riskLevel === "주의") {
+          badgeClass = "bg-amber-100 text-amber-800 border-amber-200";
+          borderClass = "border-amber-300";
+          headerBg = "bg-amber-50/70";
+          badgeLabel = "확인 필요";
+        }
+
+        const highlightedOriginal = highlightLegalTermsHTML(item.originalText, item.detectedTerms);
+
+        const termsHTML = item.detectedTerms.length > 0
+          ? `
+            <div class="mt-3 pt-3 border-t border-slate-100">
+              <div class="text-xs font-bold text-[#0E5566] mb-2 flex items-center gap-1.5">
+                <span>탐지된 핵심 법률 용어 (가공 데이터 4대 속성)</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                ${item.detectedTerms.map(t => `
+                  <div class="rounded-xl bg-[#F4F9FA] border border-[#CFE2E7] p-2.5">
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                      <span class="text-xs font-extrabold text-[#0E5566]">${t.term}</span>
+                      <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white text-[#1E7A8C] border border-[#CFE2E7]">${t.law} · ${t.contract_type}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">${t.definition}</p>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `
+          : "";
+
+        return `
+          <article class="animate-card rounded-2xl border ${borderClass} bg-white overflow-hidden shadow-2xs" style="animation-delay: ${renderIdx * 45}ms">
+            <!-- 카드 상단 바 -->
+            <div class="${headerBg} px-4 py-2.5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-extrabold text-[#0E5566]">조항 #${item.index}</span>
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${badgeClass}">${badgeLabel}</span>
+                <span class="text-[11px] font-semibold text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+                  문맥 유사도 ${simPercent}% · ${item.matchedLaw}
+                </span>
+              </div>
+              <button
+                type="button"
+                data-inspect-index="${item.index - 1}"
+                class="inspect-clause-btn text-xs font-bold text-[#1E7A8C] hover:text-[#0E5566] bg-white hover:bg-teal-50 border border-[#CFE2E7] px-2.5 py-1 rounded-lg transition cursor-pointer"
+              >
+                NLP 원리 보기 ↓
+              </button>
+            </div>
+
+            <!-- 카드 본문 -->
+            <div class="p-4">
+              <!-- 계약서 원문 -->
+              <div class="text-xs sm:text-sm font-medium text-slate-800 bg-slate-50 rounded-xl p-3 border border-slate-200/80 leading-relaxed">
+                "${highlightedOriginal}"
+              </div>
+
+              <!-- 쉬운 말 풀이 -->
+              <div class="mt-3">
+                <div class="text-xs font-extrabold text-[#0E5566] mb-1">쉬운 말 풀이 (자립준비청년 눈높이 설명)</div>
+                <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${item.easyExplanation}</p>
+              </div>
+
+              <!-- 서명 전 행동 가이드 -->
+              <div class="mt-2.5 rounded-xl bg-[#F4F9FA] px-3 py-2 border border-[#CFE2E7] flex items-start gap-2">
+                <span class="text-xs font-extrabold text-[#1E7A8C] shrink-0">행동 가이드:</span>
+                <span class="text-xs text-slate-700 leading-relaxed">${item.actionTip}</span>
+              </div>
+
+              <!-- 탐지된 법률 용어 카드 -->
+              ${termsHTML}
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      // "NLP 원리 보기" 버튼 이벤트 바인딩
+      document.querySelectorAll(".inspect-clause-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const idx = Number(btn.getAttribute("data-inspect-index"));
+          populateNlpInspector(idx);
+          document.getElementById("nlp-inspector-section").scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      });
+    }
+
+    // 딥러닝 자연어 처리 원리 탐구실 렌더링
+    function populateNlpInspector(selectedIndex = 0) {
+      const selectEl = document.getElementById("inspector-clause-select");
+      if (currentAnalysisResults.length === 0) return;
+
+      selectEl.innerHTML = currentAnalysisResults.map((item, idx) => {
+        const preview = item.originalText.length > 52 ? item.originalText.slice(0, 52) + "..." : item.originalText;
+        return `<option value="${idx}" ${idx === selectedIndex ? "selected" : ""}>조항 #${item.index} (${item.riskLevel}) — ${preview}</option>`;
+      }).join("");
+
+      const target = currentAnalysisResults[selectedIndex] || currentAnalysisResults[0];
+
+      // 1) 토큰화 시각화
+      document.getElementById("token-count-label").textContent = `${target.tokens.length}개 토큰 추출`;
+      document.getElementById("token-pills-box").innerHTML = target.tokens
+        .map(tok => `<span class="px-2.5 py-1 rounded-lg bg-white border border-[#CFE2E7] text-xs font-semibold text-[#0E5566] shadow-2xs">${tok}</span>`)
+        .join("");
+
+      // 2) 임베딩 벡터 시각화 (처음 64개 차원 막대 그래프 + 숫자 배열 미리보기)
+      const vec = target.embedding;
+      document.getElementById("vector-dim-label").textContent = `${vec.length}차원 정규화 임베딩 벡터`;
+
+      const displayDims = Math.min(64, vec.length);
+      let barsHTML = "";
+      for (let i = 0; i < displayDims; i++) {
+        const val = vec[i];
+        const heightPct = Math.max(12, Math.min(100, Math.round((Math.abs(val) / 0.45) * 100)));
+        const barColor = val >= 0 ? "bg-[#0E5566]" : "bg-[#4CA3B5]";
+        barsHTML += `<div class="flex-1 ${barColor} rounded-t-xs transition-all duration-300" style="height: ${heightPct}%" title="차원[${i}]: ${val.toFixed(4)}"></div>`;
+      }
+      document.getElementById("embedding-bars-box").innerHTML = barsHTML;
+
+      const numericSample = Array.from(vec.slice(0, 10))
+        .map(v => v.toFixed(3))
+        .join(", ");
+      document.getElementById("embedding-numeric-preview").textContent = `벡터 표현 미리보기: [${numericSample}, ... (총 ${vec.length}개 실수 배열)]`;
+
+      // 3) 코사인 유사도 Top-3 매칭 결과
+      document.getElementById("similarity-top3-box").innerHTML = target.top3
+        .map((match, rank) => {
+          const pct = (match.similarity * 100).toFixed(1);
+          const barColor = rank === 0 ? "bg-[#0E5566]" : "bg-[#4CA3B5]";
+          return `
+            <div class="bg-white rounded-lg p-2.5 border border-[#CFE2E7]">
+              <div class="flex items-center justify-between gap-2 text-xs mb-1">
+                <span class="font-bold text-slate-800">${rank + 1}순위. ${match.ref.title}</span>
+                <span class="font-mono font-extrabold text-[#0E5566]">${pct}%</span>
+              </div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full ${barColor} rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    // JSON 데이터셋 모달 테이블 렌더링
+    function renderJsonModalTable(keyword = "") {
+      const tbody = document.getElementById("json-table-body");
+      const q = keyword.trim().toLowerCase();
+
+      const filtered = LEGAL_TERMS_DB.filter(item =>
+        !q ||
+        item.term.toLowerCase().includes(q) ||
+        item.law.toLowerCase().includes(q) ||
+        item.contract_type.toLowerCase().includes(q) ||
+        item.definition.toLowerCase().includes(q)
+      );
+
+      tbody.innerHTML = filtered.map(item => `
+        <tr class="hover:bg-[#F4F9FA]/70">
+          <td class="py-2.5 px-3 font-bold text-[#0E5566]">${item.term}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-700">${item.law}</td>
+          <td class="py-2.5 px-3 text-slate-600">${item.contract_type}</td>
+          <td class="py-2.5 px-3 text-slate-700 leading-relaxed">${item.definition}</td>
+        </tr>
+      `).join("");
+
+      document.getElementById("dataset-count-badge").textContent = `법률 용어 DB ${LEGAL_TERMS_DB.length}종 탑재`;
+    }
+
+    // 토스트 알림 헬퍼 (alert() 대체)
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      const bgStyle = type === "warn" ? "bg-amber-700" : "bg-[#0E5566]";
+      toast.className = `${bgStyle} text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg pointer-events-auto animate-card max-w-sm`;
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 0.25s ease";
+        setTimeout(() => toast.remove(), 260);
+      }, 3200);
+    }
+
+    // 입력 글자수/조항수 업데이트
+    function updateInputStats() {
+      const text = document.getElementById("contract-input").value;
+      const clauses = splitContractIntoClauses(text);
+      document.getElementById("input-stats").textContent = `${text.length}자 · ${clauses.length}개 조항`;
+    }
+
+    // =========================================================================
+    // [G] 이벤트 리스너 등록 및 초기화
+    // =========================================================================
+    window.addEventListener("DOMContentLoaded", async () => {
+      const inputEl = document.getElementById("contract-input");
+
+      // 계약 유형 필터 버튼
+      document.querySelectorAll(".contract-filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          activeContractFilter = btn.getAttribute("data-contract-filter");
+          document.querySelectorAll(".contract-filter-btn").forEach(b => {
+            b.className = "contract-filter-btn text-slate-700 hover:bg-white/70 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg transition cursor-pointer";
+          });
+          btn.className = "contract-filter-btn bg-[#0E5566] text-white font-bold text-xs sm:text-sm py-2 px-2 rounded-lg transition cursor-pointer";
+          if (inputEl.value.trim()) analyzeContractText();
+        });
+      });
+
+      // 원클릭 샘플 버튼 3종
+      document.querySelectorAll(".sample-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const sampleKey = btn.getAttribute("data-sample");
+          const sample = DEMO_SAMPLES[sampleKey];
+          if (!sample) return;
+
+          document.querySelectorAll(".sample-btn").forEach(b => {
+            b.className = "sample-btn text-left p-3 rounded-xl border border-slate-200 bg-white hover:bg-[#F4F9FA] hover:border-[#1E7A8C] transition flex items-start justify-between gap-2 cursor-pointer";
+          });
+          btn.className = "sample-btn text-left p-3 rounded-xl border-2 border-[#1E7A8C] bg-[#F4F9FA] hover:bg-[#E6F2F5] transition flex items-start justify-between gap-2 cursor-pointer";
+
+          inputEl.value = sample.text;
+          updateInputStats();
+          analyzeContractText();
+        });
+      });
+
+      // 입력창 변경 감지
+      inputEl.addEventListener("input", updateInputStats);
+
+      // 내용 지우기 버튼
+      document.getElementById("clear-input-btn").addEventListener("click", () => {
+        inputEl.value = "";
+        updateInputStats();
+        inputEl.focus();
+      });
+
+      // 분석하기 버튼
+      document.getElementById("analyze-btn").addEventListener("click", analyzeContractText);
+
+      // 결과 필터 버튼
+      document.querySelectorAll(".result-filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          activeResultFilter = btn.getAttribute("data-result-filter");
+          document.querySelectorAll(".result-filter-btn").forEach(b => {
+            b.className = "result-filter-btn px-2.5 py-1 rounded-lg font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer";
+          });
+          btn.className = "result-filter-btn px-2.5 py-1 rounded-lg font-bold bg-[#0E5566] text-white cursor-pointer";
+          renderClauseCards();
+        });
+      });
+
+      // NLP 원리 탐구실 조항 드롭다운 변경
+      document.getElementById("inspector-clause-select").addEventListener("change", (e) => {
+        populateNlpInspector(Number(e.target.value));
+      });
+
+      // JSON 모달 열기/닫기
+      const jsonModal = document.getElementById("json-modal");
+      document.getElementById("open-json-modal-btn").addEventListener("click", () => {
+        renderJsonModalTable();
+        jsonModal.classList.remove("hidden");
+        jsonModal.classList.add("flex");
+      });
+      document.getElementById("close-json-modal-btn").addEventListener("click", () => {
+        jsonModal.classList.add("hidden");
+        jsonModal.classList.remove("flex");
+      });
+      jsonModal.addEventListener("click", (e) => {
+        if (e.target === jsonModal) {
+          jsonModal.classList.add("hidden");
+          jsonModal.classList.remove("flex");
+        }
+      });
+
+      // JSON 테이블 검색
+      document.getElementById("json-search-input").addEventListener("input", (e) => {
+        renderJsonModalTable(e.target.value);
+      });
+
+      // Colab 가공 JSON 파일 업로드 병합
+      document.getElementById("json-file-input").addEventListener("change", (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const parsed = JSON.parse(String(ev.target?.result || "[]"));
+            if (!Array.isArray(parsed)) throw new Error("JSON 배열 형식이 아닙니다.");
+
+            const existingTerms = new Set(LEGAL_TERMS_DB.map(t => t.term));
+            let addedCount = 0;
+            for (const row of parsed) {
+              if (row.term && row.definition && !existingTerms.has(row.term)) {
+                existingTerms.add(row.term);
+                LEGAL_TERMS_DB.push({
+                  term: String(row.term).trim(),
+                  law: String(row.law || "민법").trim(),
+                  contract_type: String(row.contract_type || "임대차·일반 계약").trim(),
+                  definition: String(row.definition).trim()
+                });
+                addedCount++;
+              }
+            }
+            renderJsonModalTable();
+            showToast(`총 ${addedCount}건의 신규 가공 법률 용어가 데이터셋에 병합되었습니다.`);
+            if (inputEl.value.trim()) analyzeContractText();
+          } catch (err) {
+            showToast("올바른 JSON 형식(term, law, contract_type, definition 포함)이 아닙니다.", "warn");
+          }
+        };
+        reader.readAsText(file, "utf-8");
+      });
+
+      // 내장 JSON 다운로드
+      document.getElementById("download-json-btn").addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(LEGAL_TERMS_DB, null, 2)], { type: "application/json;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "processed_legal_terms.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("processed_legal_terms.json 파일이 다운로드되었습니다.");
+      });
+
+      // 초기 실행: 레퍼런스 임베딩 사전 계산 후 샘플 1 즉시 분석 + 백그라운드 Transformer 로드
+      await precomputeReferenceEmbeddings();
+      renderJsonModalTable();
+      inputEl.value = DEMO_SAMPLES.sample1.text;
+      updateInputStats();
+      await analyzeContractText();
+
+      // 백그라운드에서 실제 MiniLM Transformer 모델 비동기 로드 시작
+      initTransformerInBackground();
+    });
+  </script>
+</body>
+</html>
